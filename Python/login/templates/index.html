@@ -17,7 +17,7 @@
         .Text_white{color: white;}
         #header_menu{display: flex;margin: 0 20vw; height: 40px;align-items: center;}
         #logo{margin-left: 2vw; width: 150px;}
-        #login{margin-right: 2vw; justify-self:right; width: 100px;}
+        #login{margin-right: 2vw; justify-self:right; width: 100px;margin-left: 40vw;}
         #join{margin-right: 2vw; justify-self: flex-end; width: 80px;}
 
         /*기본 기호*/
@@ -141,10 +141,10 @@
                     {% endif %}
                 </ul>
         </div>
-        <form action="/search_route" method="GET">
+        <form action="{% url 'index' %}" method="GET">
             <div id="icon_footer">
             <input type="text" id="search" name="search">
-            <button id="search_icon" type="button">
+            <button id="search_icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.75244 10.5815C3.75244 6.70052 6.91044 3.54352 10.7914 3.54352C14.6714 3.54352 17.8294 6.70052 17.8294 10.5815C17.8294 14.4625 14.6714 17.6205 10.7914 17.6205C6.91044 17.6205 3.75244 14.4625 3.75244 10.5815ZM22.2474 21.0405L17.6484 16.4535C19.0044 14.8725 19.8294 12.8235 19.8294 10.5815C19.8294 5.59852 15.7744 1.54352 10.7914 1.54352C5.80744 1.54352 1.75244 5.59852 1.75244 10.5815C1.75244 15.5655 5.80744 19.6205 10.7914 19.6205C12.8134 19.6205 14.6764 18.9445 16.1834 17.8175L20.8354 22.4565L22.2474 21.0405Z" class="fill-color0"/><style>.fill-color0 { fill: #A47864; } </style></svg>
             </button>
             
@@ -211,67 +211,34 @@
 
     
     <script>
-        let search_data = [];
-        let Page = 1; 
-        const items_Page = 3;
+        const search_icon = document.querySelector("#search_icon");
+        const search_input = document.querySelector("#search");
 
-        function Search(keyword) {
-            let url = `/search?keyword=${encodeURIComponent(keyword)}$`;
-            
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    search_data = data;
-                    Page = 1;
-                    
-                    displayPage(Page);
-                })
-                .catch(error => console.error("오류 발생:", error));
-        }
+        function doSearch() {
+            const keyword = search_input.value.trim();
+            if (!keyword) {
+                alert("검색어를 입력해주세요.");
+                return; }
 
-        function displayPage(page) {
-            let result = document.getElementById("post");
-            result.innerHTML = "";
-
-            if (search_data.length === 0) {
-                result.innerHTML = "<p class='no-result'>검색 결과가 없습니다.</p>";
-                return;
-            }
-
-            pageData.forEach(movie => {
-                let movieHtml = `
-                    
-                `;
-                resultArea.innerHTML += movieHtml;
-            });
-        }
-
-
-
-
-         
-        //post.innerHTML=""
-
-        /*function doSearch() {
-            const keyword = search.value.trim();
-            let url = `/search?keyword=${encodeURIComponent(keyword)}`;
+            let url = `/?search=${encodeURIComponent(keyword)}`;
             window.location.href = url;
         }
 
         search_icon.addEventListener("click", () => {
             doSearch();
-            });
+        });
 
-        search.addEventListener("keyup", (e) => {
+        search_input.addEventListener("keyup", (e) => {
             if (e.key === "Enter") {
+                const keyword = search_input.value.trim();
+                return;
+                if(keyword==null)
+                
+                    alert("검색어를 입력해주세요.");
+
                 e.preventDefault();
-                doSearch();
-            }
-        });*/
-
-
-
-    </script>
+                doSearch();}});
+        </script>
 
 
 

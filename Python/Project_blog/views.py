@@ -5,34 +5,39 @@ from django.core.paginator import Paginator
 # Create your views here.
 def index(request):
     user_name = request.session.get('name')
-    
     msg = request.session.pop('msg', None)
+
+    con = db.connect( dsn='localhost:1521/xe', user='C##blog', password='1234')
+    cursor = con.cursor()
 
     if request.method == 'POST':
         user = request.session['user_id']
         title = request.POST.get('title')
         content = request.POST.get('content')
-        search = request.POST.get('search')
 
-        con = db.connect(dsn='localhost:1521/xe',user='C##blog',password='1234')
-        cursor = con.cursor()
-        cursor.execute("INSERT INTO post(title,content,writer,user_id) VALUES (:1,:2,:3,:4)",[title, content, user_name, user])
-        con.commit() 
+        cursor.execute( "INSERT INTO post(title, content, writer, user_id) VALUES (:1, :2, :3, :4)", [title, content, user_name, user])
 
-    con = db.connect(dsn='localhost:1521/xe',user='C##blog',password='1234')
-    cursor = con.cursor()
-    cursor.execute("SELECT * FROM post ORDER BY ID desc")
+        con.commit()
+
+    keyword = request.GET.get('search', '').strip()
+    page = request.GET.get('page', '1')
+
+    if keyword:
+        sql = " SELECT * FROM post WHERE title LIKE :1 OR content LIKE :1 ORDER BY ID DESC "
+        search_keyword = f"%{keyword}%"
+        cursor.execute(sql, [search_keyword, search_keyword])
+    else:
+        cursor.execute("SELECT * FROM post ORDER BY ID DESC")
+
     row = cursor.fetchall()
 
-    page = request.GET.get('page', '1')
     paginator = Paginator(row, 4)
     page_obj = paginator.get_page(page)
 
     cursor.close()
     con.close()
 
-    return render(request, 'index.html', 
-                  {'posts': page_obj ,  'user_name':user_name , 'msg': msg})
+    return render(request, 'index.html', { 'posts': page_obj,'user_name': user_name,'msg': msg,'keyword': keyword})
 
 
 
@@ -177,4 +182,4 @@ def delete(request,id):
     con.close()
 
     return redirect('/')
-    
+
