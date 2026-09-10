@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>login</title>
+</head>
+<body>
+    <form method="POST" action="/login/">
+        {% csrf_token %}
+        <div>
+            <label>아이디</label>
+            <input type="text" name="user_id">
+
+            <label>비밀번호</label>
+            <input type="password" name="user_pw">
+
+            <button type="submit">로그인</button>
+        </div>
+    </form>
+    {% if msg %}
+    <script>
+        alert("{{ msg }}");
+    </script>
+    {% endif %}
+</body>
+</html>

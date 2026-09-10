@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>join</title>
+</head>
+<body>
+    <form method="post" action="/join/">
+        {% csrf_token %}
+        <div>
+            <label>이름</label>
+            <input type="text" name="name">
+            
+            <label>아이디</label>
+            <input type="text" name="user_id">
+
+            <label>비밀번호</label>
+            <input type="password" name="user_pw">
+
+            <label>생년원일</label>
+            <input type="text" name="birth">      
+
+            <label>전화번호</label>
+            <input type="text" name="phonenum">            
+
+            <label>주소</label>
+            <input type="text" name="adress">
+
+            <button type="submit">회원가입</button>
+        </div>
+    </form>
+    {% if msg %}
+    <script>
+        alert("{{ msg }}");
+    </script>
+    {% endif %}
+</body>
+</html>

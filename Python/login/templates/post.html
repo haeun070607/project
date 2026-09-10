@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        body{margin: 0; padding: 0; width: 100%;min-height: 100vh; max-height: auto; display: grid; grid-template-rows:  repeat(2, minmax(50px,auto));overflow-x: hidden;}
+        main{margin: 0 20vw;grid-row: 1/2;height: 100%;}
+        footer{background-color: #a4786454; padding-left: 180px;padding-top: 15px; padding-bottom: 50px;grid-row: 2/3;}
+
+        a{text-decoration: none; color: black;}
+        hr{opacity: 30%;}
+        input{height: 70px;width: 100%; border: none; outline: none; font-size: 40px;}
+        textarea{width: 100%; height: auto;min-height: 60vh; resize: none; border: none; outline: none; margin-bottom: 15px;}
+        #submit{margin-top: 30px ;margin-left: 52vw; width: 120px; height: 40px; background-color: #A47864;border: 2px outset;border-color: #775f52 #d3ae9b #997360 #6d4f40; border-radius: 5px; color: white; font-weight: bold; font-size: 15px;}
+        #post_title::placeholder{color: #6d4f40;}
+        #post_content::placeholder{color: #A47864;}
+        #notice{font-size: 20px; font-weight: bold;margin-bottom: 10px;color: #6d4f40;}
+        #footer_2{display:flex; flex-wrap: wrap; justify-items: center; margin-top: 15px;color: #A47864;}
+        #footer_3{display:flex; flex-wrap: wrap; justify-items: center; margin-top: 3px;color: #A47864;}
+        .footer_3_menu{margin-right: 30px; color:#A47864;}
+        .hr_class{width: 150vw; margin-left: -50vw; opacity: 30%;}
+    </style>
+</head>
+<body>
+    <head></head>
+    <main>
+        <form method="POST" action="/">
+            {% csrf_token %}
+            <button type="submit" id="submit">Upload</button>
+            <div>
+                <input id="post_title" name="title" placeholder="제목을 입력하세요">
+            </div>
+            <hr  color="#A47864">
+            <br>
+
+            <div>
+                <textarea id="post_content" name="content" rows="10" cols="50" placeholder="블로그 본문 내용을 적어주세요." required></textarea>
+            </div>
+        </form>
+    </main>
+    <footer>
+        <div id="notice">공지사항</div>
+        <hr class="hr_class"  color="#A47864">
+        <div id="footer_2">
+          <a href="/" class="footer_3_menu">회사 정보</a>
+          <a href="/" class="footer_3_menu">무슨 정보</a>
+          <a href="/" class="footer_3_menu">이용안내</a>
+        </div>
+
+        <div id="footer_3">
+          <a href="/" class="footer_3_menu">회사소개</a>
+          <a href="/" class="footer_3_menu">이용약관</a>
+          <a href="/" class="footer_3_menu">개인정보처리방침</a>
+          <a href="/" class="footer_3_menu">청소년보호정책</a>
+          <a href="/" class="footer_3_menu">Blog 정책</a>
+          <a href="/" class="footer_3_menu">고객센터</a>
+        </div>
+    </footer>
+
+    <script>
+        const post_content = document.getElementById("post_content")
+        function autocontent(){
+            post_content.style.height="auto"
+        post_content.style.height = post_content.scrollHeight + 'px'
+        }
+        
+    </script>
+</body>
+</html>

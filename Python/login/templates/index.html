@@ -1,0 +1,280 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인덱스</title>
+    <style>
+        /*시멘틱 태그 css*/
+        body{margin: 0; padding: 0; width: 100%; height: 100vh;overflow-x: hidden; max-height: 100vh;display: grid; grid-template-rows: repeat(4, minmax(50px,auto));}
+        header{grid-row: 1/2;background-color: #A47864;align-content: center;}
+        nav{margin: 0 20vw;grid-row: 2/3;}
+        main{margin: 0 20vw;grid-row: 3/4;min-height: 67.7vh; max-height: 67.7vh;}
+        footer{background-color:#a4786454;padding-left: 180px; padding-top: 15px; padding-bottom: 50px;grid-row: 4/5;}
+
+        /*헤더 css*/
+        .Text_white{color: white;}
+        #header_menu{display: flex;margin: 0 20vw; height: 40px;align-items: center;}
+        #logo{margin-left: 2vw; width: 150px;}
+        #login{margin-right: 2vw; justify-self:right; width: 100px;}
+        #join{margin-right: 2vw; justify-self: flex-end; width: 80px;}
+
+        /*기본 기호*/
+        .hr_class{width: 150vw; margin-left: -50vw; opacity: 30%;}
+        a{text-decoration: none; color: black;}
+
+        /*네브영역 css*/
+        #menu{display: flex;  justify-content: center; width: 60vw;margin-top: 0.5vh;}
+        .menu_detail{ margin: 10px 80px;}
+        .menu_detail>a{color: #A47864;font-weight: bold;}
+
+        /*메인영역 css*/
+        .post-card { margin-top: 25px; padding-bottom: 25px; border-bottom: 1px solid #E5E5E5; width: 60vw;}
+        #post_date {font-size: 0.85rem; color: #575757;}
+        #title{font-size: 25px; font-weight: bold}
+        #post_content{color: #575757;}
+
+        #search{border: 3.5px solid #A47864;width: 500px; height: 30px;margin-left: 10.5vw;outline: none}
+        #page_id{list-style: none; margin-right: 63vw;margin-left: 19vw;}
+        .pagination{list-style: none;display: flex; margin: 0; padding: 0;}
+        #page_id{margin-top: 15px;}
+        li>A{margin: 0 15px;}
+        page_item_num{margin: 0px;}
+
+        #svg_search{z-index: 9999;}
+        #icon_footer{display: flex; margin-top: 15px;align-items: center;}
+        #post_search{justify-self: center;}
+        #search_icon{margin-right: 18vw;background:none;border: none;cursor: pointer;}
+
+        /*하단영역 css*/
+        #notice{font-size: 20px; font-weight: bold;margin-bottom: 10px;color: #6d4f40;}
+        #footer_2{display:flex; flex-wrap: wrap; justify-items: center; margin-top: 15px;color: #A47864;}
+        #footer_3{display:flex; flex-wrap: wrap; justify-items: center; margin-top: 3px;color: #A47864;}
+        .footer_3_menu{margin-right: 30px; color: #A47864;}
+        
+        
+    </style>
+</head>
+<body>
+    <header>
+        <div id="header_menu">
+    <div id="logo" class="Text_white"><a href="/"><img src="{% static 'logo_white.png' %}" alt="이미지" width="70px"></a></div>
+    
+        {% if user_name %}
+    <div id="login" class="Text_white">{{user_name}}님</div>
+    <div id="join"><a href="/logout" class="Text_white">로그아웃</a></div>
+{% else %}
+    <div id="login"><a href="login" class="Text_white">로그인</a></div>
+    <div id="join"><a href="join" class="Text_white">회원가입</a></div>
+{% endif %}
+        </div>
+    </header>
+    <nav>
+        <!--메뉴-->
+        <div id="menu">
+            <div class="menu_detail"><a>이벤트</a></div>
+            <div class="menu_detail"><a>나의 블로그</a></div>
+            <div class="menu_detail"><a>내가 좋아요한 글</a></div>
+        </div>
+        <hr class="hr_class" color="#A47864">
+    </nav>
+    <!--게시물 확인-->
+    <main>
+        <div>
+            <div id="post">
+                {% for post in posts %}
+                <div class="post-card">
+                    <div>
+                         <!--글쓴이-->
+                        <span id="writer">{{ post.4 }}</span>
+                         <!--작성일-->
+                        <span id="post_date" style=" color: #A47864;">{{ post.3|date:"Y년 m월 d일 H시 i분" }}</span>
+                    </div>
+                    <div>
+                         <!--게시물 제목-->
+                        <a id="title" href="post/{{ post.0 }}">{{ post.1|truncatechars:30 }}</a>
+                    </div>
+                    <div id="post_content" style=" color: #A47864;">
+                         <!--게시물 미리보기-->
+                        {{ post.2|truncatechars:88 }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            </div>
+            <div id="post_search">
+            <div id="page_id">
+                <ul class="pagination">
+                    {% if posts.has_previous %}
+                    <li class="page_item">
+                        <a href="?page={{ posts.previous_page_number }}" style="color: #6d4f40;">이전</a>
+                    </li>
+                    {% else %}
+                    <li class="page_item">
+                        <a href="#" style="color: #6d4f40;">이전</a>
+                    </li>
+                    {% endif %}
+
+                    {% for page_number in posts.paginator.page_range %}
+                           
+                        
+                                {% if page_number == posts.number %}
+                                    <li class="page_item_num">
+                                        <a href="?page={{ page_number }}" id="page_main_num" style="font-weight: bold; color: #A47864;">{{ page_number }}</a>
+                                    </li>
+                                {% else %}
+                                <li class="page_item_num">
+                                    <a href="?page={{ page_number }}" class="page_num" oninput="A()" style=" color: #A47864;">{{ page_number }}</a>
+                                </li>
+                                {% endif %}
+                    {% endfor %}
+
+                    {% if posts.has_next %}
+                    <li class="page_item">
+                        <a href="?page={{posts.next_page_number}}" style="color: #6d4f40;" >다음</a>
+                    </li>
+                    {% else %}
+                    <li class="page_item">
+                        <a href="#" style="color: #6d4f40;">다음</a>
+                    </li>
+                    {% endif %}
+                </ul>
+        </div>
+        <form action="/search_route" method="GET">
+            <div id="icon_footer">
+            <input type="text" id="search" name="search">
+            <button id="search_icon" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.75244 10.5815C3.75244 6.70052 6.91044 3.54352 10.7914 3.54352C14.6714 3.54352 17.8294 6.70052 17.8294 10.5815C17.8294 14.4625 14.6714 17.6205 10.7914 17.6205C6.91044 17.6205 3.75244 14.4625 3.75244 10.5815ZM22.2474 21.0405L17.6484 16.4535C19.0044 14.8725 19.8294 12.8235 19.8294 10.5815C19.8294 5.59852 15.7744 1.54352 10.7914 1.54352C5.80744 1.54352 1.75244 5.59852 1.75244 10.5815C1.75244 15.5655 5.80744 19.6205 10.7914 19.6205C12.8134 19.6205 14.6764 18.9445 16.1834 17.8175L20.8354 22.4565L22.2474 21.0405Z" class="fill-color0"/><style>.fill-color0 { fill: #A47864; } </style></svg>
+            </button>
+            
+
+            <a href="post"><svg  id="post_writer" xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M21.6035 7.87999L15.9975 2.27399L2.39648 15.875L2.40148 21.476H2.40748V21.725L20.9685 21.726V20.226H9.25748L21.6035 7.87999Z" class="fill-color0"/><style>.fill-color0 { fill: #A47864; } </style></svg></a>          </div>
+            </div>
+            </div>
+        </form>
+    </main>
+
+    <footer>
+        <div id="notice">공지사항</div>
+        <hr class="hr_class">
+        <div id="footer_2">
+          <a href="/" class="footer_3_menu">회사 정보</a>
+          <a href="/" class="footer_3_menu">무슨 정보</a>
+          <a href="/" class="footer_3_menu">이용안내</a>
+        </div>
+
+        <div id="footer_3">
+          <a href="/" class="footer_3_menu">회사소개</a>
+          <a href="/" class="footer_3_menu">이용약관</a>
+          <a href="/" class="footer_3_menu">개인정보처리방침</a>
+          <a href="/" class="footer_3_menu">청소년보호정책</a>
+          <a href="/" class="footer_3_menu">Blog 정책</a>
+          <a href="/" class="footer_3_menu">고객센터</a>
+        </div>
+    </footer>
+
+    <script>
+        let currentData = [];
+        let currentPage = 1;
+        const itemsPerPage = 4;
+           
+    </script>
+    {% if msg %}
+    <script>
+        alert("{{ msg }}");
+    </script>
+    {% endif %}
+        
+    <!--페이지네이션 JS스크립트-->
+    <script>
+       document.addEventListener("DOMContentLoaded", () => {
+            const active = document.querySelector("#page_main_num")
+            const current = parseInt(active.textContent.trim());
+            
+            const start = Math.floor((current - 1) / 5) * 5 + 1;
+            const end = start + 4;
+
+            const page_total = document.querySelectorAll(".page_item_num");
+
+            page_total.forEach(item => {
+                const link = item.querySelector("a");
+                if (link){
+                    const pageNum = parseInt(link.textContent.trim());
+                    if (pageNum < start || pageNum > end) {
+                         item.style="display: none;"
+                    }
+                }
+       })});
+        
+    </script>
+
+    
+    <script>
+        let search_data = [];
+        let Page = 1; 
+        const items_Page = 3;
+
+        function Search(keyword) {
+            let url = `/search?keyword=${encodeURIComponent(keyword)}$`;
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    search_data = data;
+                    Page = 1;
+                    
+                    displayPage(Page);
+                })
+                .catch(error => console.error("오류 발생:", error));
+        }
+
+        function displayPage(page) {
+            let result = document.getElementById("post");
+            result.innerHTML = "";
+
+            if (search_data.length === 0) {
+                result.innerHTML = "<p class='no-result'>검색 결과가 없습니다.</p>";
+                return;
+            }
+
+            pageData.forEach(movie => {
+                let movieHtml = `
+                    
+                `;
+                resultArea.innerHTML += movieHtml;
+            });
+        }
+
+
+
+
+         
+        //post.innerHTML=""
+
+        /*function doSearch() {
+            const keyword = search.value.trim();
+            let url = `/search?keyword=${encodeURIComponent(keyword)}`;
+            window.location.href = url;
+        }
+
+        search_icon.addEventListener("click", () => {
+            doSearch();
+            });
+
+        search.addEventListener("keyup", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                doSearch();
+            }
+        });*/
+
+
+
+    </script>
+
+
+
+
+</body> 
+</html>
