@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인덱스</title>
+    <style>
+        /*시멘틱 태그 css*/
+        body{margin: 0; padding: 0; width: 100%; height: 100vh;overflow-x: hidden; max-height: 100vh;display: grid; grid-template-rows: repeat(4, minmax(50px,auto));}
+        header{grid-row: 1/2;background-color: #A47864;}
+        nav{margin: 0 20vw;grid-row: 2/3;}
+        main{margin: 0 20vw;grid-row: 3/4;min-height: 67.7vh; max-height: 67.7vh;}
+        footer{background-color:#a4786454;padding-left: 180px; padding-top: 15px; padding-bottom: 50px;grid-row: 4/5;}
+
+        /*헤더 css*/
+        .Text_white{color: white;}
+        #header_menu{display: flex;margin: 0 20vw; height: 40px; margin-top: 0.5vh;align-items: center;}
+        #logo{margin-left: 2vw;margin-right: 32vw; width: 150px;}
+        #login{margin-right: 2vw; justify-self:right; width: 100px;}
+        #join{margin-right: 2vw; justify-self: flex-end; width: 80px;}
+
+        /*기본 기호*/
+        .hr_class{width: 150vw; margin-left: -50vw; opacity: 30%;}
+        a{text-decoration: none; color: black;}
+
+        /*네브영역 css*/
+        #menu{display: flex;  justify-content: center; width: 60vw;margin-top: 0.5vh;}
+        .menu_detail{ margin: 4px 80px;}
+        .menu_detail>a{color: #A47864;font-weight: bold;}
+
+        /*메인영역 css*/
+        .post-card { margin-top: 25px; padding-bottom: 25px; border-bottom: 1px solid #E5E5E5; width: 60vw;}
+        #post_date {font-size: 0.85rem; color: #575757;}
+        #title{font-size: 25px; font-weight: bold}
+        #post_content{color: #575757;margin-top: 10px;}
+        #page_id{justify-self: center;list-style: none; margin-right: 45vw;}
+
+        /*하단영역 css*/
+        #notice{font-size: 20px; font-weight: bold;margin-bottom: 10px;color: #6d4f40;}
+        #footer_2{display:flex; flex-wrap: wrap; justify-items: center; margin-top: 15px;color: #A47864;}
+        #footer_3{display:flex; flex-wrap: wrap; justify-items: center; margin-top: 3px;color: #A47864;}
+        .footer_3_menu{margin-right: 30px; color: #A47864;}
+        #page_id{margin-top: 10px;}
+        .pagination{list-style: none;display: flex;}
+        li>A{margin: 0 15px;}
+        page_item_num{margin: 0px;}
+        .widget-area {width: 220px;flex-shrink: 0;margin-top: 25px;}
+        #iframe_d{margin-left: 1200px; position:absolute; height: 500px;}
+
+    </style>
+</head>
+<body>
+    <header>
+        <div id="header_menu">
+	<div id="logo" class="Text_white">인덱스 페이지</div>
+        {% if user_name %}
+    <div id="login" class="Text_white">{{user_name}}님</div>
+    <div id="join"><a href="/logout" class="Text_white">로그아웃</a></div>
+{% else %}
+    <div id="login"><a href="/login" class="Text_white">로그인</a></div>
+    <div id="join"><a href="/join" class="Text_white">회원가입</a></div>
+{% endif %}
+    </header>
+    <nav>
+
+        <div id="menu">
+            <div class="menu_detail"><a href="post">글 작성</a></div>
+            <div class="menu_detail"><a>나의 블로그</a></div>
+            <div class="menu_detail"><a>내가 좋아요한 글</a></div>
+        </div>
+        <hr class="hr_class" color="#A47864">
+    </nav>
+
+    <main>
+        <div  id="ifrmae_box">
+                <iframe src="localhost:8000" id="iframe_d" ></iframe>
+            </div>
+        <div>
+            <div id="post">
+                {% for post in posts %}
+                <div  class="post-card">
+                    <div>
+
+                        <span id="writer">{{ post.4 }}</span>
+
+                        <span id="post_date" style=" color: #A47864;">{{ post.3|date:"Y년 m월 d일 H시 i분" }}</span>
+                    </div>
+                    <div>
+
+                        <a id="title" href="post/{{ post.0 }}">{{ post.1|truncatechars:30 }}</a>
+                    </div>
+                    <div id="post_content" style=" color: #A47864;">
+
+                        {{ post.2|truncatechars:88 }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div id="page_id">
+                <ul class="pagination">
+                    {% if posts.has_previous %}
+                    <li class="page_item">
+                        <a href="?page={{ posts.previous_page_number }}" style="color: #6d4f40;">이전</a>
+                    </li>
+                    {% else %}
+                    <li class="page_item">
+                        <a href="#" style="color: #6d4f40;">이전</a>
+                    </li>
+                    {% endif %}
+
+
+                    {% for page_number in posts.paginator.page_range %}
+                        {% if page_number >= posts.number|add:-5 and page_number <= posts.number|add:5 %}
+                            {% if page_number == posts.number %}
+                                <li class="page_item_num">
+                                    <a href="?page={{ page_number }}" style="font-weight: bold; color: #A47864;">{{ page_number }}</a>
+                                </li>
+                            {% else %}
+                            <li class="page_item_num">
+                                <a href="?page={{ page_number }}"  style=" color: #A47864;">{{ page_number }}</a>
+                            </li>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if posts.has_next %}
+                    <li class="page_item">
+                        <a href="?page={{posts.next_page_number}}" style="color: #6d4f40;" >다음</a>
+                    </li>
+                    {% else %}
+                    <li class="page_item">
+                        <a href="#" style="color: #6d4f40;">다음</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            
+        </div>
+    </main>
+
+    <footer>
+        <div id="notice">공지사항</div>
+        <hr class="hr_class">
+        <div id="footer_2">
+          <a href="/" class="footer_3_menu">회사 정보</a>
+          <a href="/" class="footer_3_menu">무슨 정보</a>
+          <a href="/" class="footer_3_menu">이용안내</a>
+        </div>
+
+        <div id="footer_3">
+          <a href="/" class="footer_3_menu">회사소개</a>
+          <a href="/" class="footer_3_menu">이용약관</a>
+          <a href="/" class="footer_3_menu">개인정보처리방침</a>
+          <a href="/" class="footer_3_menu">청소년보호정책</a>
+          <a href="/" class="footer_3_menu">Blog 정책</a>
+          <a href="/" class="footer_3_menu">고객센터</a>
+        </div>
+    </footer>
+
+    <script>
+        let currentData = [];
+        let currentPage = 1;
+        const itemsPerPage = 4;
+
+           
+    </script>
+    {% if msg %}
+    <script>
+        alert("{{msg}}")
+    </script>
+    {% endif %}
+</body> 
+</html>
