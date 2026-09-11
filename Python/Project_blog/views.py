@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 import oracledb as db
 from django.core.paginator import Paginator
+import bcrypt , json
 
 # Create your views here.
 def index(request):
@@ -68,6 +69,7 @@ def post(request):
 
 def post_detail(request, id):
     if request.session.get('name'):
+        user_name = request.session.get('name')
         user = request.session['user_id']
         con = db.connect(dsn='localhost:1521/xe',user='C##blog',password='1234')
         cursor = con.cursor()
@@ -76,8 +78,9 @@ def post_detail(request, id):
 
         cursor.close()
         con.close()
-        return render(request, 'post_detail.html',{'posts': row,'user':user})
+        return render(request, 'post_detail.html',{'posts': row,'user':user,'user_name': user_name})
     else :
+        user_name = request.session.get('name')
         con = db.connect(dsn='localhost:1521/xe',user='C##blog',password='1234')
         cursor = con.cursor()
         cursor.execute("SELECT * FROM post WHERE id = :1",[id])
@@ -85,7 +88,7 @@ def post_detail(request, id):
         
         cursor.close()
         con.close()
-        return render(request, 'post_detail.html',{'posts': row})
+        return render(request, 'post_detail.html',{'posts': row,'user_name': user_name})
 
 
 def login(request):
@@ -118,7 +121,6 @@ def login(request):
 
     return render(request, "login.html")
 
-
 def join(request):
 
     if request.method == "POST":
@@ -130,7 +132,7 @@ def join(request):
             postcode = request.POST.get("postcode")
             roadname = request.POST.get("roadname")
             address = request.POST.get("address")
-
+        
             
                 #회원가입 시 빈공간 x
             if not all([name, id, pw, birth, phonenum,postcode,roadname,address]):
@@ -148,23 +150,34 @@ def join(request):
                     cursor.close()
                     con.close()
                     return render(request, "join.html", {"msg": "이미 존재하는 아이디입니다."})
+
+                # bcrypt를 이용해 사용자가 입력한 비밀번호를 암호화 후 인코딩 작업을 통해 자료형을 바이트로 변환 
+                hashed_password = bcrypt.hashpw(pw.encode("utf-8"), bcrypt.gensalt())
+
+                # 암호화된 비밀번호를 다시한번 str 로 변환 
+                hashed_password = hashed_password.decode('utf-8')
+                
                 
                 # 회원가입 정보 데이터 db에 저장
                 sql = """ INSERT INTO JOIN ( NAME, USER_ID, USER_PW, BIRTH,PHONENUM,POSTCODE,ROADNAME,ADDRESS) VALUES ( :1, :2, :3, :4, :5, :6 ,:7 ,:8)"""
-                cursor.execute(sql, (name, id, pw, birth, phonenum,postcode,roadname,address))
                 
+
+                                            # 해싱 작업을 거친 비밀번호를 db에 저장 
+                cursor.execute(sql, (name, id, hashed_password, birth, phonenum,postcode,roadname,address))
+                    
                 con.commit()
 
                 cursor.close()
                 con.close()
 
-            
+                
                 return redirect('/login/')
 
             except db.DatabaseError as e:
                 return render(request, "join.html" ,{"msg": f"오류발생: {e}"})
 
     return render(request, "join.html")
+
 #세션 삭제
 def logout(request):
     request.session.flush() 

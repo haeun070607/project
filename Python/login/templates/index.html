@@ -30,6 +30,8 @@
         .menu_detail>a{color: #A47864;font-weight: bold;}
 
         /*메인영역 css*/
+        #iframe_d_left{margin-left: -18vw; position:absolute; height: 56vh;}
+        #iframe_d_right{margin-left: 62vw; position:absolute; height: 56vh;}
         .post-card { margin-top: 25px; padding-bottom: 25px; border-bottom: 1px solid #E5E5E5; width: 60vw;}
         #post_date {font-size: 0.85rem; color: #575757;}
         #title{font-size: 25px; font-weight: bold}
@@ -81,6 +83,10 @@
     </nav>
     <!--게시물 확인-->
     <main>
+        <div  id="ifrmae_box">
+                <iframe src="localhost:8000" id="iframe_d_left" ></iframe>
+                <iframe src="localhost:8000" id="iframe_d_right" ></iframe>
+        </div>
         <div>
             <div id="post">
                 {% for post in posts %}

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -5,12 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ posts.0.1}}</title>
     <style>
-        body{margin: 0; padding: 0; width: 100%; min-height: 100vh; max-height: auto;overflow-x: hidden; display: grid;grid-template-rows:  repeat(2, minmax(50px,auto));}
-        main{margin: 0 20vw; height: 100%; margin-bottom: 0;grid-row: 1/2;}
-        footer{background-color:#a4786454;padding-left: 50px; padding-top: 15px; padding-bottom: 50px;grid-row: 2/3;}
+        /*시멘틱 태그 css*/
+        body{margin: 0; padding: 0; width: 100%; min-height: 100vh; max-height: auto;overflow-x: hidden; display: grid;grid-template-rows:  repeat(3, minmax(50px,auto));}
+        header{grid-row: 1/2;background-color: #A47864;align-content: center;}
+        main{margin: 0 20vw; height: 100%; margin-bottom: 0;grid-row: 2/3;}
+        footer{background-color:#a4786454;padding-left: 50px; padding-top: 15px; padding-bottom: 50px;grid-row: 3/4;}
 
+        /*헤더 css*/
+        .Text_white{color: white;}
+        #header_menu{display: flex;margin: 0 20vw; height: 40px;align-items: center;}
+        #logo{margin-left: 2vw; width: 150px;}
+        #login{margin-right: 2vw; justify-self:right; width: 100px;margin-left: 40vw;}
+        #join{margin-right: 2vw; justify-self: flex-end; width: 80px;}
+
+        /*기본 기호*/
         a{text-decoration: none; color: black;}
 
+        /*메인영역 css*/
         #menu{display: flex;  justify-content: center; width: 60vw;}
         .menu_detail{ margin: 10px 80px;}
 
@@ -21,9 +33,13 @@
         #title{font-size: 30px; font-weight: bold;margin-top: 50px; margin-bottom: 8px;}
         hr{opacity: 30%;}
         #post_content{margin-top: 30px;}
-        #comments{margin-top: 30px;margin-bottom: 50px;}
+        #heart_div{margin-top: 30px;margin-bottom: 20px;}
         #heart_red{display: none;}
         #heart{display: block;}
+        /*메인 - 댓글 css*/
+        #Comments_div{height: 15vh; width: 63vw; border-bottom: 2px solid #A47864; border-top: 2px solid #A47864;margin-bottom: 3vh; background-color: #a4786454;align-items: center; display: flex;} 
+        #Comments{background-color: white;height: 12vh;width: 55vw;margin-left: 1vw;border-radius: 3px; outline: none;padding: -1px;}
+        #Comments_btn{width: 5vw;height: 5vh;margin-left: 0.5vw;border: 2px solid #6d4f40;border-radius: 3px; background-color: #A47864;color: white;font-size: 15px; margin-top: 6vh;}
 
         /*하단영역 css*/
         #notice{font-size: 20px; font-weight: bold;margin-bottom: 10px;color: #6d4f40;}
@@ -34,6 +50,19 @@
     </style>
 </head>
 <body>
+    <header>
+        <div id="header_menu">
+        <div id="logo" class="Text_white"><a href="/"><img src="{% static 'logo_white.png' %}" alt="이미지" width="70px"></a></div>
+        
+            {% if user_name %}
+                <div id="login" class="Text_white">{{user_name}}님</div>
+                <div id="join"><a href="/logout" class="Text_white">로그아웃</a></div>
+            {% else %}
+                <div id="login"><a href="login" class="Text_white">로그인</a></div>
+                <div id="join"><a href="join" class="Text_white">회원가입</a></div>
+            {% endif %}
+        </div>
+    </header>
     <main>
         <div>
             <div id="post">
@@ -62,12 +91,16 @@
                 {% endfor %}
             </div>
             
-            <div id="comments">
+            <div id="heart_div">
                 <hr  color="#A47864">
                 
                 <svg xmlns="http://www.w3.org/2000/svg" id="heart_red" width="30" height="30" fill="none" viewBox="0 0 24 24"><path fill="red" fill-rule="evenodd" d="M17.441 3.371c-2.096-.677-4.007-.113-5.44 1.583-1.436-1.698-3.347-2.259-5.44-1.583-2.648.852-4.299 3.243-4.31 6.24-.025 5.133 4.916 9.155 9.547 11.207l.203.09.203-.09c4.632-2.052 9.571-6.074 9.546-11.208-.012-2.996-1.663-5.387-4.309-6.239" clip-rule="evenodd"/></svg>
                 <svg xmlns="http://www.w3.org/2000/svg" id="heart" width="30" height="30" fill="none" viewBox="0 0 24 24"><path stroke="#6d4f40" stroke-linecap="square" stroke-width="1.5" d="M21.25 9.636c-.01-2.536-1.34-4.921-3.963-5.766-1.801-.581-3.763-.258-5.287 1.93-1.524-2.188-3.486-2.511-5.287-1.93C4.09 4.715 2.76 7.1 2.75 9.636 2.726 14.68 7.837 18.54 12 20.384H12c4.163-1.844 9.274-5.704 9.249-10.748Z"/></svg>
             </div>
+        </div>
+        <div id="Comments_div">
+            <div contenteditable="true" id="Comments"></div>
+            <input type="button" id="Comments_btn" value="등록">
         </div>
     </main>         
 
