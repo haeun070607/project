@@ -96,28 +96,32 @@ def login(request):
         id = request.POST.get("user_id")
         pw = request.POST.get("user_pw")
 
-
         try:   
-            # 로그인 시 회원정보 조회
             con = db.connect(dsn="localhost:1521/xe", user="C##blog", password="1234")
             cursor = con.cursor()
-            
-            sql = "SELECT * FROM JOIN WHERE TRIM(USER_ID) = :1 AND TRIM(USER_PW) = :2"
-            cursor.execute(sql, (id, pw))
+
+            sql = "SELECT * FROM JOIN WHERE TRIM(USER_ID) = :1"
+            cursor.execute(sql, (id,))
             user_data = cursor.fetchone()
 
             cursor.close()
             con.close()
 
             if user_data:
-                request.session['name'] = user_data[1]
-                request.session['user_id'] = user_data[2]
-                return redirect('/')
+
+                db_hashed_pw = user_data[3]
+
+                if bcrypt.checkpw(pw.encode('utf-8'), db_hashed_pw.encode('utf-8')):
+                    request.session['name'] = user_data[1]
+                    request.session['user_id'] = user_data[2] 
+                    return redirect('/')
+                else:
+                    return render(request, "login.html", {"msg": "비밀번호가 일치하지 않습니다."})
             else:
-                return render(request, "login.html", {"msg": "로그인 실패"})
+                return render(request, "login.html", {"msg": "존재하지 않는 아이디입니다."})
 
         except db.DatabaseError as e:
-            return render(request, "index.html")
+            return render(request, "login.html", {"msg": f"DB 오류: {e}"})
 
     return render(request, "login.html")
 
@@ -133,7 +137,6 @@ def join(request):
             roadname = request.POST.get("roadname")
             address = request.POST.get("address")
         
-            
                 #회원가입 시 빈공간 x
             if not all([name, id, pw, birth, phonenum,postcode,roadname,address]):
                 return render(request, "join.html", {"msg": "빈 공간 작성 부탁드립니다"})
