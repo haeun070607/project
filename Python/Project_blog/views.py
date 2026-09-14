@@ -8,7 +8,7 @@ def index(request):
     user_name = request.session.get('name')
     msg = request.session.pop('msg', None)
 
-    con = db.connect( dsn='localhost:1521/xe', user='C##blog', password='1234')
+    con = db.connect( dsn='localhost:1522/xe', user='C##blog', password='1234')
     cursor = con.cursor()
 
     if request.method == 'POST':
@@ -55,7 +55,7 @@ def post(request):
         content = request.POST.get('content')
         user = request.session['user_id']
         
-        con = db.connect(dsn='localhost:1521/xe', user='C##blog', password='1234')
+        con = db.connect(dsn='localhost:1522/xe', user='C##blog', password='1234')
         cursor = con.cursor()
         cursor.execute("INSERT INTO post(title, content, writer,user_id) VALUES (:1, :2, :3, :4)", [title, content, user_name, user])
         con.commit()
@@ -65,13 +65,11 @@ def post(request):
 
     return render(request, 'post.html')
 
-
-
 def post_detail(request, id):
     if request.session.get('name'):
         user_name = request.session.get('name')
         user = request.session['user_id']
-        con = db.connect(dsn='localhost:1521/xe',user='C##blog',password='1234')
+        con = db.connect(dsn='localhost:1522/xe',user='C##blog',password='1234')
         cursor = con.cursor()
         cursor.execute("SELECT * FROM post WHERE id = :1",[id])
         row = cursor.fetchall()
@@ -81,7 +79,7 @@ def post_detail(request, id):
         return render(request, 'post_detail.html',{'posts': row,'user':user,'user_name': user_name})
     else :
         user_name = request.session.get('name')
-        con = db.connect(dsn='localhost:1521/xe',user='C##blog',password='1234')
+        con = db.connect(dsn='localhost:1522/xe',user='C##blog',password='1234')
         cursor = con.cursor()
         cursor.execute("SELECT * FROM post WHERE id = :1",[id])
         row = cursor.fetchall()
@@ -97,10 +95,10 @@ def login(request):
         pw = request.POST.get("user_pw")
 
         try:   
-            con = db.connect(dsn="localhost:1521/xe", user="C##blog", password="1234")
+            con = db.connect(dsn="localhost:1522/xe", user="C##blog", password="1234")
             cursor = con.cursor()
 
-            sql = "SELECT * FROM JOIN WHERE TRIM(USER_ID) = :1"
+            sql = """SELECT * FROM "JOIN" WHERE TRIM(USER_ID) = :1"""
             cursor.execute(sql, (id,))
             user_data = cursor.fetchone()
 
@@ -110,6 +108,7 @@ def login(request):
             if user_data:
 
                 db_hashed_pw = user_data[3]
+
 
                 if bcrypt.checkpw(pw.encode('utf-8'), db_hashed_pw.encode('utf-8')):
                     request.session['name'] = user_data[1]
@@ -141,7 +140,7 @@ def join(request):
             if not all([name, id, pw, birth, phonenum,postcode,roadname,address]):
                 return render(request, "join.html", {"msg": "빈 공간 작성 부탁드립니다"})
             try:
-                con = db.connect(dsn="localhost:1521/xe", user="C##blog", password="1234")
+                con = db.connect(dsn="localhost:1522/xe", user="C##blog", password="1234")
                 cursor = con.cursor()
 
                 # 아이디 중복 처리
@@ -162,8 +161,7 @@ def join(request):
                 
                 
                 # 회원가입 정보 데이터 db에 저장
-                sql = """ INSERT INTO JOIN ( NAME, USER_ID, USER_PW, BIRTH,PHONENUM,POSTCODE,ROADNAME,ADDRESS) VALUES ( :1, :2, :3, :4, :5, :6 ,:7 ,:8)"""
-                
+                sql = """ INSERT INTO "JOIN" ( NAME, USER_ID, USER_PW, BIRTH,PHONENUM,POSTCODE,ROADNAME,ADDRESS) VALUES ( :1, :2, :3, :4, :5, :6 ,:7 ,:8)"""
 
                                             # 해싱 작업을 거친 비밀번호를 db에 저장 
                 cursor.execute(sql, (name, id, hashed_password, birth, phonenum,postcode,roadname,address))
@@ -189,7 +187,7 @@ def logout(request):
 #게시물 삭제
 def delete(request,id):
 
-    con = db.connect(dsn='localhost:1521/xe',user='C##blog',password='1234')
+    con = db.connect(dsn='localhost:1522/xe',user='C##blog',password='1234')
     cursor = con.cursor()
     cursor.execute("DELETE FROM post WHERE id=:1",[id])
     con.commit()
