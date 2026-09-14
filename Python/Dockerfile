@@ -1,7 +1,7 @@
 FROM python:3.10-slim
 
 RUN apt-get update && apt-get install -y \
-    libaio1 \
+    libaio1t64 \
     build-essential \
     curl \
     && rm -rf /var/lib/apt/lists/*
